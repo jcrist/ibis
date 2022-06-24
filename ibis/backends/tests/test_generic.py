@@ -283,7 +283,7 @@ def test_case_where(backend, alltypes, df):
 
 
 # TODO: some of these are notimpl (datafusion) others are probably never
-@pytest.mark.notimpl(["datafusion", "mysql"])
+@pytest.mark.notimpl(["datafusion", "mysql", "sqlite"])
 @pytest.mark.xfail(
     duckdb is not None and vparse(duckdb.__version__) < vparse("0.3.3"),
     reason="<0.3.3 does not support isnan/isinf properly",
