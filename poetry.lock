@@ -429,7 +429,7 @@ numpy = ">=1.14"
 
 [[package]]
 name = "duckdb-engine"
-version = "0.1.9"
+version = "0.1.11"
 description = ""
 category = "main"
 optional = true
@@ -2950,8 +2950,8 @@ duckdb = [
     {file = "duckdb-0.4.0.tar.gz", hash = "sha256:569e5d618de871e21dd676925349a7a5e701b87ebda3433e0c1d57627a465c1c"},
 ]
 duckdb-engine = [
-    {file = "duckdb_engine-0.1.9-py3-none-any.whl", hash = "sha256:3fadc49baf795c43e6e7315703e7f42c05681db4a525975c8607f8a0aebec00b"},
-    {file = "duckdb_engine-0.1.9.tar.gz", hash = "sha256:71632b9abedeab44d72a31adfc0701c91eb342c4a36cf026c56957521441742a"},
+    {file = "duckdb_engine-0.1.11-py3-none-any.whl", hash = "sha256:8721775c71300b0b01350429e8727940e03a09e530c91b18861eb6b1d2d8cb1b"},
+    {file = "duckdb_engine-0.1.11.tar.gz", hash = "sha256:d958fa32b2f239616416431d474d7a2135fd444b5001339cbe99b868b79ccf50"},
 ]
 dunamai = [
     {file = "dunamai-1.12.0-py3-none-any.whl", hash = "sha256:00b9c1ef58d4950204f76c20f84afe7a28d095f77feaa8512dbb172035415e61"},
