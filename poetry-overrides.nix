@@ -91,4 +91,18 @@ self: super:
   traitlets = super.traitlets.overridePythonAttrs (attrs: {
     nativeBuildInputs = attrs.nativeBuildInputs or [ ] ++ [ self.flit-core ];
   });
+
+  duckdb = super.duckdb.overridePythonAttrs (attrs: {
+    inherit (pkgs.duckdb) src version;
+
+    format = "setuptools";
+
+    SETUPTOOLS_SCM_PRETEND_VERSION = attrs.version;
+
+    patches = attrs.patches or [ ] ++ pkgs.duckdb.patches;
+
+    preConfigure = ''
+      cd tools/pythonpkg
+    '';
+  });
 }

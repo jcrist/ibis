@@ -17,6 +17,16 @@ import sources.nixpkgs {
         sha256 = "sha256-BZWi4kEumZemQeYoAtlUSw922p+R6opSWp/bmX0DjAo=";
       };
 
+      duckdb = super.duckdb.overrideAttrs (attrs: {
+        patches = attrs.patches or [ ] ++ [
+          (pkgs.fetchpatch {
+            name = "fix-list-type-metadata.patch";
+            url = "https://github.com/duckdb/duckdb/commit/26d123fdc57273903573c72b1ddafc52f365e378.patch";
+            sha256 = "sha256-ttqs5EjeSLhZQOXc43Y5/N5IYSESQTD1FZWV1uJ15Fo=";
+          })
+        ];
+      });
+
       mkPoetryEnv = python: pkgs.poetry2nix.mkPoetryEnv {
         inherit python;
         projectDir = ../.;
