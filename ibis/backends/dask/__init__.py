@@ -85,9 +85,10 @@ class Backend(BasePandasBackend):
 
         result = self.compile(query, params, **kwargs)
         if isinstance(result, DaskMethodsMixin):
-            return result.compute()
+            out = result.compute()
         else:
-            return result
+            out = result
+        return self._enforce_schema(out, query)
 
     def compile(
         self, query: ir.Expr, params: Mapping[ir.Expr, object] = None, **kwargs

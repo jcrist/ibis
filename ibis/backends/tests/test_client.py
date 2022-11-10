@@ -89,6 +89,27 @@ def test_query_schema(ddl_backend, ddl_con, expr_fn, expected):
     assert schema.equals(expected)
 
 
+@pytest.mark.notimpl(["datafusion"])
+def test_schema_types_enforced(alltypes):
+    # This is hard to test, but a common issue is tiny scalar types
+    # being accidentally cast to wider sizes. Ensuring an `int8` is
+    # returned is a good proxy for whether `schema.apply_to` is
+    # actually called.
+    expr = alltypes.mutate(new=ibis.literal(7, type="int8"))[["new"]].limit(5)
+
+    # Table
+    result = expr.execute()
+    assert result.new.dtype == "int8"
+
+    # Column
+    result = expr.new.execute()
+    assert result.dtype == "int8"
+
+    # # Scalar
+    result = expr.new.sum().cast("int8").execute()
+    assert result.dtype == "int8"
+
+
 @pytest.mark.notimpl(["datafusion", "snowflake", "polars"])
 @pytest.mark.notyet(["sqlite"])
 @pytest.mark.never(

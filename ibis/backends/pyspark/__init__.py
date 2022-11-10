@@ -216,14 +216,18 @@ class Backend(BaseSQLBackend):
     ) -> Any:
         """Execute an expression."""
         if isinstance(expr, types.Table):
-            return self.compile(expr, timecontext, params, **kwargs).toPandas()
+            schema = expr.schema()
+            df = self.compile(expr, timecontext, params, **kwargs).toPandas()
+            return schema.apply_to(df)
         elif isinstance(expr, types.Column):
             # expression must be named for the projection
             if not expr.has_name():
                 expr = expr.name("tmp")
-            return self.compile(
-                expr.to_projection(), timecontext, params, **kwargs
-            ).toPandas()[expr.get_name()]
+            col_name = expr.get_name()
+            expr = expr.to_projection()
+            schema = expr.schema()
+            df = self.compile(expr, timecontext, params, **kwargs).toPandas()
+            return schema.apply_to(df)[col_name]
         elif isinstance(expr, types.Scalar):
             compiled = self.compile(expr, timecontext, params, **kwargs)
             if isinstance(compiled, Column):

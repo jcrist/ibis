@@ -259,6 +259,15 @@ def execute_mode_series_group_by(_, data, mask, **kwargs):
     )
 
 
+def cast_scalar(data, op, type):
+    return execute_node(op, data, type)
+
+
+@execute_node.register(ops.Cast, dd.core.Scalar, dt.DataType)
+def execute_cast_scalar(op, data, type, **kwargs):
+    return dd.map_partitions(cast_scalar, data, op=op, type=type)
+
+
 @execute_node.register(ops.Cast, ddgb.SeriesGroupBy, dt.DataType)
 def execute_cast_series_group_by(op, data, type, **kwargs):
     result = execute_cast_series_generic(op, make_selected_obj(data), type, **kwargs)

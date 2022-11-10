@@ -7,6 +7,7 @@ import pyspark
 import pyspark.sql.functions as F
 import pyspark.sql.types as pt
 from pyspark.sql import Window
+from pyspark.sql.dataframe import DataFrame as pyspark_DataFrame
 from pyspark.sql.functions import PandasUDFType, pandas_udf
 
 import ibis.common.exceptions as com
@@ -247,6 +248,9 @@ def compile_cast(t, op, **kwargs):
         cast_type = ibis_dtype_to_spark_dtype(op.to)
 
     src_column = t.translate(op.arg, **kwargs)
+    if isinstance(src_column, pyspark_DataFrame):
+        assert len(src_column.columns) == 1
+        return src_column.select(src_column[src_column.columns[0]].cast(cast_type))
     return src_column.cast(cast_type)
 
 
@@ -559,7 +563,8 @@ def compile_mean(t, op, **kwargs):
 @compiles(ops.Sum)
 @compiles(ops.CumulativeSum)
 def compile_sum(t, op, **kwargs):
-    return compile_aggregator(t, op, fn=F.sum, **kwargs)
+    out = compile_aggregator(t, op, fn=F.sum, **kwargs)
+    return out
 
 
 @compiles(ops.ApproxCountDistinct)

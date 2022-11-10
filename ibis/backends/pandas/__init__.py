@@ -142,6 +142,20 @@ class BasePandasBackend(BaseBackend):
         if schema is not None:
             self.schemas[table_name] = schema
 
+    def _enforce_schema(self, result, expr):
+        if isinstance(result, pd.DataFrame):
+            schema = expr.schema()
+            return schema.apply_to(result)
+        else:
+            type = expr.type()
+            schema = ibis.schema({"tmp": type})
+            if isinstance(result, pd.Series):
+                df = result.to_frame("tmp")
+                return schema.apply_to(df)["tmp"]
+            else:
+                df = pd.DataFrame({"tmp": [result]}, dtype=type.to_pandas())
+                return schema.apply_to(df).tmp.iloc[0]
+
     @classmethod
     def _supports_conversion(cls, obj: Any) -> bool:
         return True
@@ -235,4 +249,6 @@ class Backend(BasePandasBackend):
         else:
             params = {k.op() if hasattr(k, 'op') else k: v for k, v in params.items()}
 
-        return execute_and_reset(node, params=params, **kwargs)
+        out = execute_and_reset(node, params=params, **kwargs)
+
+        return self._enforce_schema(out, query)
